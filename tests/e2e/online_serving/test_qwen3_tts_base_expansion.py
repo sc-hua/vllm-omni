@@ -170,5 +170,5 @@ def test_inline_ref_audio_cache_ignores_openai_voice_label(omni_server, online_c
         "min_audio_bytes": 1,
     }
 
-    online_client.send_audio_speech_request({**base_request, "voice": "alloy"})
-    online_client.send_audio_speech_request({**base_request, "voice": "echo"})
+    online_client.send_audio_speech_request({**base_request, "voice": "voice-a"})
+    online_client.send_audio_speech_request({**base_request, "voice": "voice-b"})
