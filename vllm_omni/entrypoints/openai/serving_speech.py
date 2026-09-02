@@ -2528,12 +2528,7 @@ class OmniOpenAIServingSpeech(OpenAIServing, AudioMixin):
         key = "audio" if "audio" in mm else ("model_outputs" if "model_outputs" in mm else None)
         return mm, key
 
-    def _build_tts_params(
-        self,
-        request: OpenAICreateSpeechRequest,
-        *,
-        has_inline_ref_audio: bool = False,
-    ) -> dict[str, Any]:
+    def _build_tts_params(self, request: OpenAICreateSpeechRequest) -> dict[str, Any]:
         """Build TTS parameters from request.
 
         Processes each parameter if present, skips if not.
@@ -2557,9 +2552,7 @@ class OmniOpenAIServingSpeech(OpenAIServing, AudioMixin):
             params["language"] = ["Auto"]
 
         # Speaker (voice)
-        # Inline Base requests derive their voice from ref_audio. The OpenAI-compatible
-        # voice label must not turn that artifact into a named-speaker cache lookup.
-        if request.voice is not None and not (has_inline_ref_audio and params["task_type"][0] == "Base"):
+        if request.voice is not None:
             voice_lower = request.voice.lower()
             precomputed_speakers = self._adapter.capabilities.precomputed_speakers if self._adapter is not None else {}
             params["speaker"] = [request.voice]
@@ -3027,8 +3020,6 @@ class OmniOpenAIServingSpeech(OpenAIServing, AudioMixin):
     async def _build_qwen3_tts_request(
         self,
         request: OpenAICreateSpeechRequest,
-        *,
-        has_inline_ref_audio: bool = False,
     ) -> tuple[dict[str, Any], dict[str, Any], str | None]:
         """Build prompt + tts_params for Qwen3-TTS.
 
@@ -3037,10 +3028,7 @@ class OmniOpenAIServingSpeech(OpenAIServing, AudioMixin):
         Qwen3-TTS ref-audio artifact tracked after ``generate()``.
         """
         qwen3_ref_audio_warmup_artifact_key: str | None = None
-        tts_params = self._build_tts_params(
-            request,
-            has_inline_ref_audio=has_inline_ref_audio,
-        )
+        tts_params = self._build_tts_params(request)
         # Resolve ref_audio (explicit or auto-set for uploaded voices)
         # to [[wav_list, sr]] so the model doesn't re-decode base64.
         ref_audio_source = request.ref_audio

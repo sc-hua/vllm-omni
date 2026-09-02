@@ -4924,6 +4924,7 @@ class TestTTSAsyncOffloading:
         )
 
         assert request_id == "req-hot"
+        assert request.voice == "voice-a"
         assert "ref_audio" not in tts_params
         assert "speaker" not in tts_params
         assert "voice_created_at" not in tts_params
