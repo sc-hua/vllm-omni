@@ -180,7 +180,10 @@ class Qwen3TTSAdapter(ARTTSAdapter):
     async def build(
         self, request: "OpenAICreateSpeechRequest", sampling_params_list: list, has_inline_ref_audio: bool
     ) -> PreparedRequest:
-        prompt, tts_params, warmup_key = await self.ctx.server._build_qwen3_tts_request(request)
+        prompt, tts_params, warmup_key = await self.ctx.server._build_qwen3_tts_request(
+            request=request,
+            has_inline_ref_audio=has_inline_ref_audio,
+        )
         return PreparedRequest(
             prompt=prompt,
             tts_params=tts_params,
